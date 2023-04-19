@@ -1,5 +1,6 @@
 from flask_app.config.mysqlconnection import connectToMySQL
 
+from flask import flash
 
 
 class Cuenta:
@@ -13,6 +14,26 @@ class Cuenta:
         self.saldo = data['saldo']
         self.created_at = data['created_at']
         self.updated_at = data['updated_at']
+
+
+    @staticmethod
+    def valido_nombre(formulario):
+
+        es_valido =True
+
+
+        if len(formulario['nombre'])<2:
+            flash('El nombre debe contener mas caracteres', 'log')
+
+        query = "SELECT * FORM clientes WHERE nombre = %(nombre)s"
+        resultado = connectToMySQL('examen_python').query_db(query, formulario)
+
+        if len(resultado) <1:
+            flash('El nomrbe no se encuentra registrado', 'log')
+
+        return es_valido
+
+        
 
 
     @classmethod
@@ -30,21 +51,40 @@ class Cuenta:
 
 
     @classmethod
-    def get_by_id(cls):
+    def get_by_id(cls, formulario):
 
         query= "SELECT * FROM clientes WHERE id = %(id)s"
 
-        result = connectToMySQL('examen_python').query_db(query, formulario)
+        resultado = connectToMySQL('examen_python').query_db(query, formulario)
 
-        cliente = cls(result[0])
+        cliente = cls(resultado[0])
 
         return cliente
 
 
+    @classmethod
+    def get_by_nombre(cls, formulario):
+
+        query="SELECT * FROM clientes WHERE nombre = %(nombre)s"
+
+        resultado= connectToMySQL('examen_python').query_db(query, formulario)
+        
+        if len(resultado) < 1:
+
+            return False
+        
+        else:
+
+            cliente = cls(resultado[0])
+
+            return cliente
+
+
+
 
     @classmethod
-    def deposito(cls, recarga):
-        query = "SELECT saldo FROM clientes WHERE id = %(id)s;"
+    def deposito_update(cls, recarga):
+        query = "UPDATE clientes SET saldo=%(saldo)s WHERE id = %(id)s;"
         resultado = connectToMySQL('examen_python').query_db(query)
 
         self.saldo += recarga
@@ -57,8 +97,8 @@ class Cuenta:
 
         
     @classmethod
-    def deposito(cls, compra):
-        query = "SELECT saldo FROM clientes WHERE id = %(id)s;"
+    def compra_update(cls, compra):
+        query = "UPDATE clientes SET saldo=%(saldo)s WHERE id = %(id)s;"
         resultado = connectToMySQL('examen_python').query_db(query)
 
         self.saldo -= compra
