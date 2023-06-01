@@ -11,7 +11,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema examen_python
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `examen_python` DEFAULT CHARACTER SET utf8 ;
+CREATE SCHEMA IF NOT EXISTS `examen_python` DEFAULT CHARACTER SET utf8mb3 ;
 USE `examen_python` ;
 
 -- -----------------------------------------------------
@@ -19,12 +19,34 @@ USE `examen_python` ;
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `examen_python`.`clientes` (
   `id` INT NOT NULL AUTO_INCREMENT,
-  `nombre` VARCHAR(45) NULL,
-  `numero_cuenta` INT NULL,
-  `saldo` INT NULL,
+  `nombre` VARCHAR(45) NULL DEFAULT NULL,
+  `numero_cuenta` INT NULL DEFAULT NULL,
+  `saldo` INT NULL DEFAULT NULL,
   `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 5
+DEFAULT CHARACTER SET = utf8mb3;
+
+
+-- -----------------------------------------------------
+-- Table `examen_python`.`retiros`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `examen_python`.`retiros` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `retiro` INT NULL,
+  `detalle` VARCHAR(45) NULL,
+  `created_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` DATETIME NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `cliente_id` INT NOT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `fk_retiros_clientes_idx` (`cliente_id` ASC) VISIBLE,
+  CONSTRAINT `fk_retiros_clientes`
+    FOREIGN KEY (`cliente_id`)
+    REFERENCES `examen_python`.`clientes` (`id`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
 ENGINE = InnoDB;
 
 
